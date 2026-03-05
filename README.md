@@ -3,7 +3,7 @@
 [![Live Demo](https://img.shields.io/badge/demo-live-green)](https://technipun-ai.github.io/de-cheatsheet/)
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
-**Free, no-signup tools for data engineers.** Built by a senior DE with 15+ years of experience.
+**Free, no-signup tools for data engineers.** Built by engineers who've been in the trenches.
 
 🔗 **Live at:** [technipun-ai.github.io/de-cheatsheet](https://technipun-ai.github.io/de-cheatsheet/)
 
