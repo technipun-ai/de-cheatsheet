@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cron Expression Generator | Free Tool</title>
+    <meta name="description" content="Generate cron expressions visually. See next run times. Free, no signup.">
+    <style>
+        :root { --bg: #0d1117; --card: #161b22; --text: #c9d1d9; --accent: #58a6ff; --green: #3fb950; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); padding: 1.5rem; line-height: 1.6; }
+        .container { max-width: 800px; margin: 0 auto; }
+        h1 { color: white; margin-bottom: 0.5rem; }
+        .subtitle { color: var(--accent); margin-bottom: 1.5rem; }
+        .card { background: var(--card); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; border: 1px solid #30363d; }
+        h3 { color: white; margin-bottom: 1rem; }
+        .cron-display { font-family: monospace; font-size: 2rem; color: var(--accent); background: var(--bg); padding: 1rem; border-radius: 8px; text-align: center; margin-bottom: 1rem; letter-spacing: 0.2em; }
+        .human-readable { text-align: center; margin-bottom: 1.5rem; font-size: 1.1rem; }
+        .fields { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.5rem; margin-bottom: 1rem; }
+        @media (max-width: 600px) { .fields { grid-template-columns: repeat(3, 1fr); } }
+        .field { text-align: center; }
+        .field label { display: block; font-size: 0.75rem; color: #8b949e; margin-bottom: 0.3rem; }
+        .field select { width: 100%; padding: 0.5rem; border-radius: 4px; border: 1px solid #30363d; background: var(--bg); color: var(--text); font-size: 0.9rem; }
+        .presets { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.5rem; }
+        .preset { padding: 0.4rem 0.8rem; border-radius: 4px; border: 1px solid #30363d; background: var(--bg); color: var(--text); cursor: pointer; font-size: 0.85rem; }
+        .preset:hover { border-color: var(--accent); color: var(--accent); }
+        .next-runs { background: var(--bg); padding: 1rem; border-radius: 8px; }
+        .next-runs h4 { color: white; margin-bottom: 0.5rem; font-size: 0.9rem; }
+        .next-runs ul { list-style: none; font-family: monospace; font-size: 0.85rem; }
+        .next-runs li { padding: 0.3rem 0; border-bottom: 1px solid #30363d; }
+        .copy-btn { width: 100%; padding: 0.8rem; border-radius: 6px; border: none; background: var(--accent); color: white; font-weight: 600; cursor: pointer; margin-top: 1rem; }
+        .copy-btn:hover { opacity: 0.9; }
+        .tip { background: linear-gradient(135deg, #1a1f35 0%, #161b22 100%); border: 1px solid var(--green); }
+        .wallet { font-family: monospace; background: var(--bg); padding: 0.5rem; border-radius: 4px; word-break: break-all; font-size: 0.85rem; margin: 0.5rem 0; }
+        .note { font-size: 0.85rem; color: #8b949e; }
+        .syntax { margin-top: 1rem; padding: 1rem; background: var(--bg); border-radius: 6px; font-size: 0.85rem; }
+        .syntax code { color: var(--accent); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⏰ Cron Expression Generator</h1>
+        <p class="subtitle">Build cron schedules visually</p>
+
+        <div class="card">
+            <div class="cron-display" id="cronDisplay">* * * * *</div>
+            <div class="human-readable" id="humanReadable">Every minute</div>
+
+            <h3>Quick Presets</h3>
+            <div class="presets">
+                <button class="preset" onclick="setPreset('* * * * *')">Every minute</button>
+                <button class="preset" onclick="setPreset('*/5 * * * *')">Every 5 min</button>
+                <button class="preset" onclick="setPreset('*/15 * * * *')">Every 15 min</button>
+                <button class="preset" onclick="setPreset('0 * * * *')">Every hour</button>
+                <button class="preset" onclick="setPreset('0 */4 * * *')">Every 4 hours</button>
+                <button class="preset" onclick="setPreset('0 6 * * *')">Daily 6 AM</button>
+                <button class="preset" onclick="setPreset('0 0 * * *')">Midnight</button>
+                <button class="preset" onclick="setPreset('0 9 * * 1')">Mon 9 AM</button>
+                <button class="preset" onclick="setPreset('0 0 * * 0')">Weekly (Sun)</button>
+                <button class="preset" onclick="setPreset('0 0 1 * *')">Monthly</button>
+            </div>
+
+            <h3>Custom Schedule</h3>
+            <div class="fields">
+                <div class="field">
+                    <label>Minute</label>
+                    <select id="minute" onchange="updateCron()">
+                        <option value="*">Every (*)</option>
+                        <option value="*/5">*/5</option>
+                        <option value="*/10">*/10</option>
+                        <option value="*/15">*/15</option>
+                        <option value="*/30">*/30</option>
+                        <option value="0">0</option>
+                        <option value="15">15</option>
+                        <option value="30">30</option>
+                        <option value="45">45</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>Hour</label>
+                    <select id="hour" onchange="updateCron()">
+                        <option value="*">Every (*)</option>
+                        <option value="*/2">*/2</option>
+                        <option value="*/4">*/4</option>
+                        <option value="*/6">*/6</option>
+                        <option value="0">0 (12 AM)</option>
+                        <option value="6">6 AM</option>
+                        <option value="9">9 AM</option>
+                        <option value="12">12 PM</option>
+                        <option value="18">6 PM</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>Day (Month)</label>
+                    <select id="dayMonth" onchange="updateCron()">
+                        <option value="*">Every (*)</option>
+                        <option value="1">1st</option>
+                        <option value="15">15th</option>
+                        <option value="1,15">1st & 15th</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>Month</label>
+                    <select id="month" onchange="updateCron()">
+                        <option value="*">Every (*)</option>
+                        <option value="1">January</option>
+                        <option value="*/3">Quarterly</option>
+                        <option value="6">June</option>
+                        <option value="12">December</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>Day (Week)</label>
+                    <select id="dayWeek" onchange="updateCron()">
+                        <option value="*">Every (*)</option>
+                        <option value="0">Sunday</option>
+                        <option value="1">Monday</option>
+                        <option value="1-5">Mon-Fri</option>
+                        <option value="0,6">Weekends</option>
+                        <option value="5">Friday</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="copy-btn" onclick="copyCron()">📋 Copy Cron Expression</button>
+
+            <div class="next-runs">
+                <h4>Next 5 Run Times (approx)</h4>
+                <ul id="nextRuns"></ul>
+            </div>
+
+            <div class="syntax">
+                <strong>Format:</strong> <code>minute hour day-of-month month day-of-week</code><br>
+                <code>*</code> = any | <code>*/n</code> = every n | <code>n,m</code> = specific | <code>n-m</code> = range
+            </div>
+        </div>
+
+        <div class="card tip">
+            <h3 style="color:var(--green);">💚 Found this helpful?</h3>
+            <p>Free tools = time invested. Tips keep them free:</p>
+            <div class="wallet">0x4946d2344C740F113FbdC0346DFC79f5F6930cD8</div>
+            <p class="note">ETH, USDC on Ethereum, Polygon, Arbitrum, Base</p>
+        </div>
+    </div>
+
+    <script>
+function updateCron() {
+    const minute = document.getElementById('minute').value;
+    const hour = document.getElementById('hour').value;
+    const dayMonth = document.getElementById('dayMonth').value;
+    const month = document.getElementById('month').value;
+    const dayWeek = document.getElementById('dayWeek').value;
+    
+    const cron = `${minute} ${hour} ${dayMonth} ${month} ${dayWeek}`;
+    document.getElementById('cronDisplay').textContent = cron;
+    document.getElementById('humanReadable').textContent = describeСron(cron);
+    calculateNextRuns(cron);
+}
+
+function setPreset(cron) {
+    const parts = cron.split(' ');
+    document.getElementById('minute').value = parts[0];
+    document.getElementById('hour').value = parts[1];
+    document.getElementById('dayMonth').value = parts[2];
+    document.getElementById('month').value = parts[3];
+    document.getElementById('dayWeek').value = parts[4];
+    
+    // If value not in options, set to *
+    ['minute', 'hour', 'dayMonth', 'month', 'dayWeek'].forEach((id, i) => {
+        const sel = document.getElementById(id);
+        if (sel.value !== parts[i]) {
+            // Try to find matching option or default
+            let found = false;
+            for (let opt of sel.options) {
+                if (opt.value === parts[i]) { found = true; break; }
+            }
+            if (!found) sel.value = '*';
+        }
+    });
+    
+    document.getElementById('cronDisplay').textContent = cron;
+    document.getElementById('humanReadable').textContent = describeСron(cron);
+    calculateNextRuns(cron);
+}
+
+function describeСron(cron) {
+    const [min, hour, dom, month, dow] = cron.split(' ');
+    let desc = '';
+    
+    if (cron === '* * * * *') return 'Every minute';
+    if (cron === '0 * * * *') return 'Every hour at minute 0';
+    if (cron === '0 0 * * *') return 'Every day at midnight';
+    if (min.startsWith('*/')) return `Every ${min.slice(2)} minutes`;
+    if (hour.startsWith('*/') && min === '0') return `Every ${hour.slice(2)} hours`;
+    
+    if (dow !== '*') {
+        const days = {'0':'Sunday','1':'Monday','2':'Tuesday','3':'Wednesday','4':'Thursday','5':'Friday','6':'Saturday','1-5':'Mon-Fri','0,6':'Weekends'};
+        desc += days[dow] || `day ${dow}`;
+    }
+    if (dom !== '*') desc += ` on day ${dom}`;
+    if (month !== '*') desc += ` in month ${month}`;
+    if (hour !== '*') desc += ` at ${hour}:${min === '*' ? '00' : min.padStart(2,'0')}`;
+    
+    return desc || `${min} ${hour} ${dom} ${month} ${dow}`;
+}
+
+function calculateNextRuns(cron) {
+    const ul = document.getElementById('nextRuns');
+    ul.innerHTML = '';
+    
+    // Simple approximation - not a full cron parser
+    const now = new Date();
+    const runs = [];
+    let d = new Date(now);
+    
+    for (let i = 0; i < 100 && runs.length < 5; i++) {
+        d = new Date(d.getTime() + 60000); // +1 minute
+        if (matchesCron(d, cron)) {
+            runs.push(d);
+        }
+    }
+    
+    runs.forEach(r => {
+        const li = document.createElement('li');
+        li.textContent = r.toLocaleString();
+        ul.appendChild(li);
+    });
+    
+    if (runs.length === 0) {
+        ul.innerHTML = '<li>Complex expression - verify manually</li>';
+    }
+}
+
+function matchesCron(date, cron) {
+    const [min, hour, dom, month, dow] = cron.split(' ');
+    
+    if (!matchField(date.getMinutes(), min)) return false;
+    if (!matchField(date.getHours(), hour)) return false;
+    if (!matchField(date.getDate(), dom)) return false;
+    if (!matchField(date.getMonth() + 1, month)) return false;
+    if (!matchField(date.getDay(), dow)) return false;
+    
+    return true;
+}
+
+function matchField(value, field) {
+    if (field === '*') return true;
+    if (field.includes('/')) {
+        const step = parseInt(field.split('/')[1]);
+        return value % step === 0;
+    }
+    if (field.includes(',')) {
+        return field.split(',').map(Number).includes(value);
+    }
+    if (field.includes('-')) {
+        const [start, end] = field.split('-').map(Number);
+        return value >= start && value <= end;
+    }
+    return parseInt(field) === value;
+}
+
+function copyCron() {
+    const cron = document.getElementById('cronDisplay').textContent;
+    navigator.clipboard.writeText(cron).then(() => alert('Copied: ' + cron));
+}
+
+// Initialize
+calculateNextRuns('* * * * *');
+    </script>
+</body>
+</html>

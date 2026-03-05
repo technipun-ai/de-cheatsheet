@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snowflake Cost Calculator | Free Tool</title>
+    <meta name="description" content="Calculate Snowflake credit costs. Compare warehouse sizes. Free, no signup.">
+    <style>
+        :root { --bg: #0d1117; --card: #161b22; --text: #c9d1d9; --accent: #58a6ff; --green: #3fb950; --yellow: #d29922; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); padding: 1.5rem; line-height: 1.6; }
+        .container { max-width: 800px; margin: 0 auto; }
+        h1 { color: white; margin-bottom: 0.5rem; }
+        .subtitle { color: var(--accent); margin-bottom: 1.5rem; }
+        .card { background: var(--card); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; border: 1px solid #30363d; }
+        h3 { color: white; margin-bottom: 1rem; }
+        label { display: block; margin-bottom: 0.3rem; color: white; font-size: 0.9rem; }
+        input, select { width: 100%; padding: 0.6rem; border-radius: 6px; border: 1px solid #30363d; background: var(--bg); color: var(--text); margin-bottom: 1rem; font-size: 0.9rem; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
+        .result { background: var(--bg); padding: 1.5rem; border-radius: 8px; margin-top: 1rem; }
+        .big-number { font-size: 2.5rem; color: white; font-weight: bold; }
+        .unit { font-size: 1rem; color: var(--accent); }
+        table { width: 100%; margin-top: 1rem; border-collapse: collapse; }
+        td, th { padding: 0.6rem; border-bottom: 1px solid #30363d; text-align: left; }
+        th { color: white; }
+        td:last-child, th:last-child { text-align: right; }
+        .tip { background: linear-gradient(135deg, #1a1f35 0%, #161b22 100%); border: 1px solid var(--green); }
+        .wallet { font-family: monospace; background: var(--bg); padding: 0.5rem; border-radius: 4px; word-break: break-all; font-size: 0.85rem; margin: 0.5rem 0; }
+        .note { font-size: 0.85rem; color: #8b949e; }
+        .warning { background: rgba(210, 153, 34, 0.1); border: 1px solid var(--yellow); padding: 0.75rem; border-radius: 6px; margin-top: 1rem; font-size: 0.9rem; }
+        .sizes { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
+        .size-btn { padding: 0.4rem 0.8rem; border-radius: 4px; border: 1px solid #30363d; background: var(--bg); color: var(--text); cursor: pointer; font-size: 0.85rem; }
+        .size-btn.active { border-color: var(--accent); background: rgba(88, 166, 255, 0.1); color: var(--accent); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>❄️ Snowflake Cost Calculator</h1>
+        <p class="subtitle">Know your credit burn before you scale</p>
+
+        <div class="card">
+            <h3>Warehouse Configuration</h3>
+            
+            <label>Warehouse Size</label>
+            <div class="sizes" id="sizes">
+                <button class="size-btn" data-credits="1" data-size="X-Small">X-Small (1)</button>
+                <button class="size-btn active" data-credits="2" data-size="Small">Small (2)</button>
+                <button class="size-btn" data-credits="4" data-size="Medium">Medium (4)</button>
+                <button class="size-btn" data-credits="8" data-size="Large">Large (8)</button>
+                <button class="size-btn" data-credits="16" data-size="X-Large">X-Large (16)</button>
+                <button class="size-btn" data-credits="32" data-size="2X-Large">2X-Large (32)</button>
+                <button class="size-btn" data-credits="64" data-size="3X-Large">3X-Large (64)</button>
+                <button class="size-btn" data-credits="128" data-size="4X-Large">4X-Large (128)</button>
+            </div>
+            
+            <div class="grid">
+                <div>
+                    <label>Hours Running Per Day</label>
+                    <input type="number" id="hoursPerDay" value="8" min="0" max="24" step="0.5">
+                </div>
+                <div>
+                    <label>Days Per Month</label>
+                    <input type="number" id="daysPerMonth" value="22" min="1" max="31">
+                </div>
+            </div>
+
+            <div class="grid">
+                <div>
+                    <label>Credit Price ($)</label>
+                    <input type="number" id="creditPrice" value="3.00" min="0" step="0.01">
+                </div>
+                <div>
+                    <label>Cloud Provider</label>
+                    <select id="cloud" onchange="updatePrice()">
+                        <option value="2.00">AWS Standard ($2.00)</option>
+                        <option value="3.00" selected>AWS Enterprise ($3.00)</option>
+                        <option value="3.50">AWS Business Critical ($3.50)</option>
+                        <option value="2.50">Azure Standard ($2.50)</option>
+                        <option value="3.00">Azure Enterprise ($3.00)</option>
+                        <option value="2.00">GCP Standard ($2.00)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="result">
+                <div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:1rem;">
+                    <div>
+                        <div class="note">Monthly Cost</div>
+                        <div class="big-number" id="monthlyCost">$1,056</div>
+                    </div>
+                    <div style="text-align:right;">
+                        <div class="note">Credits/Month: <span id="creditsMonth">352</span></div>
+                        <div class="note">Credits/Hour: <span id="creditsHour">2</span></div>
+                    </div>
+                </div>
+                
+                <table>
+                    <tr><th>Metric</th><th>Value</th></tr>
+                    <tr><td>Warehouse Size</td><td id="sizeDisplay">Small</td></tr>
+                    <tr><td>Credits per Hour</td><td id="cphDisplay">2</td></tr>
+                    <tr><td>Daily Runtime</td><td id="dailyDisplay">8 hours</td></tr>
+                    <tr><td>Daily Cost</td><td id="dailyCost">$48.00</td></tr>
+                    <tr><td>Annual Estimate</td><td id="annualCost">$12,672</td></tr>
+                </table>
+
+                <div class="warning">
+                    💡 <strong>Tip:</strong> Use auto-suspend (1-5 min) and auto-resume. A warehouse sitting idle still burns credits!
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Size Comparison</h3>
+            <table>
+                <tr><th>Size</th><th>Credits/Hr</th><th>Daily (8hr)</th><th>Monthly</th></tr>
+                <tr><td>X-Small</td><td>1</td><td id="xs-daily">-</td><td id="xs-monthly">-</td></tr>
+                <tr><td>Small</td><td>2</td><td id="s-daily">-</td><td id="s-monthly">-</td></tr>
+                <tr><td>Medium</td><td>4</td><td id="m-daily">-</td><td id="m-monthly">-</td></tr>
+                <tr><td>Large</td><td>8</td><td id="l-daily">-</td><td id="l-monthly">-</td></tr>
+                <tr><td>X-Large</td><td>16</td><td id="xl-daily">-</td><td id="xl-monthly">-</td></tr>
+            </table>
+        </div>
+
+        <div class="card tip">
+            <h3 style="color:var(--green);">💚 Found this helpful?</h3>
+            <p>Free tools take time to build. Tips keep them alive:</p>
+            <div class="wallet">0x4946d2344C740F113FbdC0346DFC79f5F6930cD8</div>
+            <p class="note">ETH, USDC on Ethereum, Polygon, Arbitrum, Base</p>
+        </div>
+    </div>
+
+    <script>
+let selectedCredits = 2;
+let selectedSize = 'Small';
+
+document.querySelectorAll('.size-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        selectedCredits = parseInt(btn.dataset.credits);
+        selectedSize = btn.dataset.size;
+        calculate();
+    });
+});
+
+document.querySelectorAll('input').forEach(input => {
+    input.addEventListener('input', calculate);
+});
+
+function updatePrice() {
+    document.getElementById('creditPrice').value = document.getElementById('cloud').value;
+    calculate();
+}
+
+function calculate() {
+    const hoursPerDay = parseFloat(document.getElementById('hoursPerDay').value) || 0;
+    const daysPerMonth = parseInt(document.getElementById('daysPerMonth').value) || 0;
+    const creditPrice = parseFloat(document.getElementById('creditPrice').value) || 0;
+    
+    const creditsPerDay = selectedCredits * hoursPerDay;
+    const creditsPerMonth = creditsPerDay * daysPerMonth;
+    const dailyCost = creditsPerDay * creditPrice;
+    const monthlyCost = creditsPerMonth * creditPrice;
+    const annualCost = monthlyCost * 12;
+    
+    document.getElementById('monthlyCost').textContent = '$' + monthlyCost.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
+    document.getElementById('creditsMonth').textContent = creditsPerMonth.toLocaleString();
+    document.getElementById('creditsHour').textContent = selectedCredits;
+    document.getElementById('sizeDisplay').textContent = selectedSize;
+    document.getElementById('cphDisplay').textContent = selectedCredits;
+    document.getElementById('dailyDisplay').textContent = hoursPerDay + ' hours';
+    document.getElementById('dailyCost').textContent = '$' + dailyCost.toFixed(2);
+    document.getElementById('annualCost').textContent = '$' + annualCost.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
+    
+    // Comparison table
+    const sizes = [{id:'xs', c:1}, {id:'s', c:2}, {id:'m', c:4}, {id:'l', c:8}, {id:'xl', c:16}];
+    sizes.forEach(s => {
+        const d = s.c * hoursPerDay * creditPrice;
+        const m = d * daysPerMonth;
+        document.getElementById(s.id + '-daily').textContent = '$' + d.toFixed(0);
+        document.getElementById(s.id + '-monthly').textContent = '$' + m.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
+    });
+}
+
+calculate();
+    </script>
+</body>
+</html>

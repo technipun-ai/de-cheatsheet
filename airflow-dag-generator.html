@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Airflow DAG Generator | Free Tool</title>
+    <meta name="description" content="Generate production-ready Airflow DAGs in seconds. Free, no signup.">
+    <style>
+        :root { --bg: #0d1117; --card: #161b22; --text: #c9d1d9; --accent: #58a6ff; --green: #3fb950; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); padding: 1.5rem; line-height: 1.6; }
+        .container { max-width: 900px; margin: 0 auto; }
+        h1 { color: white; margin-bottom: 0.5rem; font-size: 1.8rem; }
+        .subtitle { color: var(--accent); margin-bottom: 1.5rem; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
+        .card { background: var(--card); border-radius: 12px; padding: 1.5rem; border: 1px solid #30363d; }
+        label { display: block; margin-bottom: 0.3rem; color: white; font-size: 0.9rem; }
+        input, select, textarea { width: 100%; padding: 0.6rem; border-radius: 6px; border: 1px solid #30363d; background: var(--bg); color: var(--text); margin-bottom: 0.8rem; font-size: 0.9rem; font-family: inherit; }
+        textarea { font-family: monospace; resize: vertical; }
+        button { padding: 0.8rem 1.5rem; border-radius: 6px; border: none; background: var(--accent); color: white; font-weight: 600; cursor: pointer; margin-right: 0.5rem; margin-bottom: 0.5rem; }
+        button:hover { opacity: 0.9; }
+        button.secondary { background: transparent; border: 1px solid var(--accent); color: var(--accent); }
+        .output { background: var(--bg); border-radius: 8px; padding: 1rem; font-family: monospace; font-size: 0.85rem; white-space: pre-wrap; overflow-x: auto; max-height: 500px; overflow-y: auto; border: 1px solid #30363d; }
+        .tip { background: linear-gradient(135deg, #1a1f35 0%, #161b22 100%); border: 1px solid var(--green); margin-top: 1.5rem; }
+        .wallet { font-family: monospace; background: var(--bg); padding: 0.5rem; border-radius: 4px; word-break: break-all; font-size: 0.8rem; margin: 0.5rem 0; }
+        .note { font-size: 0.8rem; color: #8b949e; }
+        .checkbox-group { display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 0.8rem; }
+        .checkbox-group label { display: flex; align-items: center; gap: 0.4rem; margin: 0; }
+        .checkbox-group input { width: auto; margin: 0; }
+        h3 { color: white; margin-bottom: 1rem; font-size: 1rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⚙️ Airflow DAG Generator</h1>
+        <p class="subtitle">Production-ready DAGs in seconds</p>
+
+        <div class="grid">
+            <div class="card">
+                <h3>Configuration</h3>
+                
+                <label>DAG ID</label>
+                <input type="text" id="dagId" value="my_etl_pipeline" placeholder="my_dag_name">
+                
+                <label>Description</label>
+                <input type="text" id="description" value="Daily ETL pipeline" placeholder="What does this DAG do?">
+                
+                <label>Schedule</label>
+                <select id="schedule">
+                    <option value="@daily">Daily (@daily)</option>
+                    <option value="@hourly">Hourly (@hourly)</option>
+                    <option value="@weekly">Weekly (@weekly)</option>
+                    <option value="0 6 * * *">Daily at 6 AM</option>
+                    <option value="0 */4 * * *">Every 4 hours</option>
+                    <option value="None">Manual only (None)</option>
+                </select>
+                
+                <label>Owner</label>
+                <input type="text" id="owner" value="data-team" placeholder="team-name">
+                
+                <label>Start Date</label>
+                <input type="date" id="startDate" value="2026-01-01">
+                
+                <label>Retries</label>
+                <input type="number" id="retries" value="2" min="0" max="10">
+                
+                <label>Retry Delay (minutes)</label>
+                <input type="number" id="retryDelay" value="5" min="1">
+
+                <label>Options</label>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" id="catchup"> Catchup</label>
+                    <label><input type="checkbox" id="emailOnFailure" checked> Email on failure</label>
+                    <label><input type="checkbox" id="dependsOnPast"> Depends on past</label>
+                </div>
+
+                <label>Tasks (comma-separated)</label>
+                <input type="text" id="tasks" value="extract, transform, load" placeholder="task1, task2, task3">
+                
+                <label>Task Type</label>
+                <select id="taskType">
+                    <option value="python">PythonOperator</option>
+                    <option value="bash">BashOperator</option>
+                    <option value="empty">EmptyOperator (placeholders)</option>
+                </select>
+
+                <button onclick="generate()">Generate DAG</button>
+                <button class="secondary" onclick="copyCode()">Copy Code</button>
+            </div>
+
+            <div class="card">
+                <h3>Generated DAG</h3>
+                <div class="output" id="output">Click "Generate DAG" to create your code...</div>
+            </div>
+        </div>
+
+        <div class="card tip">
+            <h3 style="color:var(--green);">💚 Saved you time?</h3>
+            <p>Building free tools takes effort. Tips keep them free:</p>
+            <div class="wallet">0x4946d2344C740F113FbdC0346DFC79f5F6930cD8</div>
+            <p class="note">ETH, USDC on Ethereum, Polygon, Arbitrum, Base</p>
+        </div>
+    </div>
+
+    <script>
+function generate() {
+    const dagId = document.getElementById('dagId').value || 'my_dag';
+    const description = document.getElementById('description').value;
+    const schedule = document.getElementById('schedule').value;
+    const owner = document.getElementById('owner').value || 'airflow';
+    const startDate = document.getElementById('startDate').value;
+    const retries = document.getElementById('retries').value;
+    const retryDelay = document.getElementById('retryDelay').value;
+    const catchup = document.getElementById('catchup').checked;
+    const emailOnFailure = document.getElementById('emailOnFailure').checked;
+    const dependsOnPast = document.getElementById('dependsOnPast').checked;
+    const tasks = document.getElementById('tasks').value.split(',').map(t => t.trim()).filter(t => t);
+    const taskType = document.getElementById('taskType').value;
+
+    let imports = `from airflow import DAG
+from datetime import datetime, timedelta`;
+
+    if (taskType === 'python') {
+        imports += `\nfrom airflow.operators.python import PythonOperator`;
+    } else if (taskType === 'bash') {
+        imports += `\nfrom airflow.operators.bash import BashOperator`;
+    } else {
+        imports += `\nfrom airflow.operators.empty import EmptyOperator`;
+    }
+
+    const scheduleStr = schedule === 'None' ? 'None' : `'${schedule}'`;
+    
+    let code = `${imports}
+
+default_args = {
+    'owner': '${owner}',
+    'depends_on_past': ${dependsOnPast ? 'True' : 'False'},
+    'email_on_failure': ${emailOnFailure ? 'True' : 'False'},
+    'email_on_retry': False,
+    'retries': ${retries},
+    'retry_delay': timedelta(minutes=${retryDelay}),
+}
+
+with DAG(
+    '${dagId}',
+    default_args=default_args,
+    description='${description}',
+    schedule_interval=${scheduleStr},
+    start_date=datetime(${startDate.split('-').join(', ')}),
+    catchup=${catchup ? 'True' : 'False'},
+    tags=['generated'],
+) as dag:
+
+`;
+
+    // Generate task functions/commands
+    if (taskType === 'python') {
+        tasks.forEach(task => {
+            const funcName = task.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
+            code += `    def ${funcName}_func(**context):
+        """${task} task logic"""
+        execution_date = context['ds']
+        # TODO: Add your ${task} logic here
+        print(f"Running ${task} for {execution_date}")
+
+`;
+        });
+    }
+
+    // Generate task operators
+    tasks.forEach(task => {
+        const taskId = task.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
+        if (taskType === 'python') {
+            code += `    ${taskId} = PythonOperator(
+        task_id='${taskId}',
+        python_callable=${taskId}_func,
+    )
+
+`;
+        } else if (taskType === 'bash') {
+            code += `    ${taskId} = BashOperator(
+        task_id='${taskId}',
+        bash_command='echo "Running ${task}"',
+    )
+
+`;
+        } else {
+            code += `    ${taskId} = EmptyOperator(task_id='${taskId}')
+
+`;
+        }
+    });
+
+    // Generate dependencies
+    if (tasks.length > 1) {
+        const taskIds = tasks.map(t => t.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase());
+        code += `    # Task dependencies\n    ${taskIds.join(' >> ')}\n`;
+    }
+
+    document.getElementById('output').textContent = code;
+}
+
+function copyCode() {
+    const code = document.getElementById('output').textContent;
+    navigator.clipboard.writeText(code).then(() => {
+        alert('Code copied to clipboard!');
+    });
+}
+
+// Generate on load
+generate();
+    </script>
+</body>
+</html>

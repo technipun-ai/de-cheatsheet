@@ -3,104 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Engineering Cheatsheet 2026 | Free</title>
-    <meta name="description" content="Battle-tested patterns for SQL, Airflow, Spark, Kafka, dbt. From interview prep to production.">
+    <title>Free Data Engineering Tools | DE Toolkit</title>
+    <meta name="description" content="Free tools for data engineers: cost calculators, DAG generators, cron builders, cheatsheets. No signup required.">
     <style>
-        :root {
-            --bg: #0d1117;
-            --card: #161b22;
-            --text: #c9d1d9;
-            --accent: #58a6ff;
-            --green: #3fb950;
-        }
+        :root { --bg: #0d1117; --card: #161b22; --text: #c9d1d9; --accent: #58a6ff; --green: #3fb950; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            line-height: 1.6;
-            padding: 2rem;
-        }
-        .container { max-width: 800px; margin: 0 auto; }
+        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+        .hero { padding: 4rem 2rem; text-align: center; background: linear-gradient(135deg, #161b22 0%, #0d1117 100%); border-bottom: 1px solid #30363d; }
         h1 { color: white; font-size: 2.5rem; margin-bottom: 0.5rem; }
-        .subtitle { color: var(--accent); font-size: 1.2rem; margin-bottom: 2rem; }
-        .card {
-            background: var(--card);
-            border-radius: 12px;
-            padding: 2rem;
-            margin-bottom: 1.5rem;
-            border: 1px solid #30363d;
-        }
-        h2 { color: white; margin-bottom: 1rem; }
-        ul { padding-left: 1.5rem; margin-bottom: 1rem; }
-        li { margin-bottom: 0.5rem; }
-        .btn {
-            display: inline-block;
-            background: var(--accent);
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            margin-right: 1rem;
-            margin-bottom: 0.5rem;
-        }
-        .btn:hover { opacity: 0.9; }
-        .btn-secondary {
-            background: transparent;
-            border: 1px solid var(--accent);
-            color: var(--accent);
-        }
-        .tip-section {
-            background: linear-gradient(135deg, #1a1f35 0%, #161b22 100%);
-            border: 1px solid var(--green);
-        }
-        .wallet {
-            font-family: monospace;
-            background: var(--bg);
-            padding: 1rem;
-            border-radius: 8px;
-            word-break: break-all;
-            margin: 1rem 0;
-            border: 1px solid #30363d;
-        }
-        .networks { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1rem; }
-        .network {
-            background: var(--bg);
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            border: 1px solid #30363d;
-        }
-        .author { margin-top: 3rem; text-align: center; color: #8b949e; }
-        code { background: var(--bg); padding: 0.2rem 0.4rem; border-radius: 4px; }
+        .subtitle { color: var(--accent); font-size: 1.2rem; margin-bottom: 1rem; }
+        .tagline { color: #8b949e; max-width: 500px; margin: 0 auto; }
+        .container { max-width: 900px; margin: 0 auto; padding: 2rem; }
+        .tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .tool-card { background: var(--card); border-radius: 12px; padding: 1.5rem; border: 1px solid #30363d; transition: border-color 0.2s, transform 0.2s; }
+        .tool-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+        .tool-card h3 { color: white; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
+        .tool-card p { color: #8b949e; font-size: 0.9rem; margin-bottom: 1rem; }
+        .tool-card a { display: inline-block; background: var(--accent); color: white; padding: 0.5rem 1rem; border-radius: 6px; text-decoration: none; font-weight: 500; font-size: 0.9rem; }
+        .tool-card a:hover { opacity: 0.9; }
+        .featured { border-color: var(--green); background: linear-gradient(135deg, #1a2332 0%, #161b22 100%); }
+        .featured-badge { background: var(--green); color: #0d1117; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.7rem; font-weight: 600; }
+        .section-title { color: white; margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 1px solid #30363d; }
+        .tip-section { background: var(--card); border-radius: 12px; padding: 2rem; border: 1px solid var(--green); text-align: center; margin-top: 2rem; }
+        .tip-section h3 { color: var(--green); margin-bottom: 0.5rem; }
+        .wallet { font-family: monospace; background: var(--bg); padding: 1rem; border-radius: 8px; margin: 1rem 0; word-break: break-all; border: 1px solid #30363d; }
+        .networks { display: flex; justify-content: center; gap: 0.5rem; flex-wrap: wrap; margin-top: 1rem; }
+        .network { background: var(--bg); padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; border: 1px solid #30363d; }
+        footer { text-align: center; padding: 2rem; color: #8b949e; font-size: 0.9rem; border-top: 1px solid #30363d; margin-top: 2rem; }
+        footer a { color: var(--accent); text-decoration: none; }
     </style>
 </head>
 <body>
+    <div class="hero">
+        <h1>🛠️ DE Toolkit</h1>
+        <p class="subtitle">Free Tools for Data Engineers</p>
+        <p class="tagline">No signup. No email gate. Just useful tools built by data engineers who've been there.</p>
+    </div>
+
     <div class="container">
-        <h1>📊 Data Engineering Cheatsheet 2026</h1>
-        <p class="subtitle">From Interview Prep to Production — Battle-Tested Patterns</p>
-        
-        <div class="card">
-            <h2>What's Inside</h2>
-            <ul>
-                <li><strong>SQL Optimization</strong> — Query patterns that actually matter</li>
-                <li><strong>Airflow</strong> — Idempotent DAGs, dynamic tasks, sensors</li>
-                <li><strong>Spark</strong> — Partitioning, broadcast joins, caching strategy</li>
-                <li><strong>Kafka</strong> — Consumer patterns, exactly-once, retention</li>
-                <li><strong>dbt</strong> — Model organization, incremental patterns, testing</li>
-                <li><strong>Data Modeling</strong> — SCD types, fact table grain, star vs snowflake</li>
-                <li><strong>Interview Questions</strong> — Real-time dashboards, late data, quality strategy</li>
-                <li><strong>Cost Optimization</strong> — Cloud warehouse, Spark, Kafka quick wins</li>
-            </ul>
-            <a href="https://gist.github.com/technipun-ai/0a4292cdeed554c42e6c16c7768b22d3" class="btn" target="_blank">📄 Get the Cheatsheet (Free)</a>
+        <h2 class="section-title">📊 Cost Calculators</h2>
+        <div class="tools-grid">
+            <div class="tool-card">
+                <h3>❄️ Snowflake Cost Calculator</h3>
+                <p>Estimate credit costs before scaling. Compare warehouse sizes. Know your burn rate.</p>
+                <a href="snowflake-cost-calc.html">Open Tool →</a>
+            </div>
+            <div class="tool-card">
+                <h3>💰 BigQuery Cost Estimator</h3>
+                <p>Calculate query costs by data scanned. Includes free tier calculation and quick optimization tips.</p>
+                <a href="bq-cost.html">Open Tool →</a>
+            </div>
         </div>
 
-        <div class="card tip-section">
-            <h2>💚 Found It Useful?</h2>
-            <p>This took real experience to compile. If it saves you time, consider a tip:</p>
+        <h2 class="section-title">⚙️ Generators</h2>
+        <div class="tools-grid">
+            <div class="tool-card">
+                <h3>🔄 Airflow DAG Generator</h3>
+                <p>Generate production-ready DAG code. Configure schedules, retries, dependencies visually.</p>
+                <a href="airflow-dag-generator.html">Open Tool →</a>
+            </div>
+            <div class="tool-card">
+                <h3>⏰ Cron Expression Builder</h3>
+                <p>Build cron expressions visually. See next run times. Copy ready-to-use expressions.</p>
+                <a href="cron-generator.html">Open Tool →</a>
+            </div>
+        </div>
+
+        <h2 class="section-title">📄 Resources</h2>
+        <div class="tools-grid">
+            <div class="tool-card featured">
+                <h3>📊 Data Engineering Cheatsheet <span class="featured-badge">NEW</span></h3>
+                <p>Comprehensive 2026 guide: SQL optimization, Airflow patterns, Spark tuning, Kafka, dbt, interview prep. 9000+ words of battle-tested knowledge.</p>
+                <a href="https://gist.github.com/technipun-ai/0a4292cdeed554c42e6c16c7768b22d3" target="_blank">Get Cheatsheet →</a>
+            </div>
+            <div class="tool-card">
+                <h3>🗂️ DataStack Tools Directory</h3>
+                <p>Curated directory of 100+ data engineering tools. Compare ETL, orchestration, warehouses, and more.</p>
+                <a href="https://datastack.tools" target="_blank">Browse Tools →</a>
+            </div>
+        </div>
+
+        <div class="tip-section">
+            <h3>💚 These tools are free. Tips keep them that way.</h3>
+            <p>Built by a senior data engineer with 15+ years of battle scars. If any tool saves you time, consider a tip:</p>
             <div class="wallet">0x4946d2344C740F113FbdC0346DFC79f5F6930cD8</div>
-            <p>Accepts any amount — even $1 helps!</p>
+            <p style="color: #8b949e; font-size: 0.9rem;">Accepts any amount — even $1 helps keep the servers running</p>
             <div class="networks">
                 <span class="network">Ethereum</span>
                 <span class="network">Polygon</span>
@@ -110,14 +97,10 @@
                 <span class="network">USDT</span>
             </div>
         </div>
-
-        <div class="card">
-            <h2>Who Made This</h2>
-            <p>Created by a Senior Data Engineer with 15+ years building pipelines at scale. PhD in Computer Science, US Patent holder, battle scars from Databricks, Airflow, Kafka, and too many 3 AM pages.</p>
-            <p style="margin-top: 1rem;">No signup. No email gate. Just useful content.</p>
-        </div>
-
-        <p class="author">Made with ☕ and real production experience</p>
     </div>
+
+    <footer>
+        <p>Made with ☕ by <a href="https://github.com/technipun-ai">technipun-ai</a> | <a href="https://datastack.tools">DataStack Tools</a></p>
+    </footer>
 </body>
 </html>
