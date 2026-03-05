@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BigQuery Cost Estimator | Free Tool</title>
+    <meta name="description" content="Estimate BigQuery query costs before running. Free, no signup required.">
+    <style>
+        :root { --bg: #0d1117; --card: #161b22; --text: #c9d1d9; --accent: #58a6ff; --green: #3fb950; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); padding: 2rem; line-height: 1.6; }
+        .container { max-width: 600px; margin: 0 auto; }
+        h1 { color: white; margin-bottom: 0.5rem; }
+        .subtitle { color: var(--accent); margin-bottom: 2rem; }
+        .card { background: var(--card); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; border: 1px solid #30363d; }
+        label { display: block; margin-bottom: 0.5rem; color: white; }
+        input, select { width: 100%; padding: 0.75rem; border-radius: 8px; border: 1px solid #30363d; background: var(--bg); color: var(--text); margin-bottom: 1rem; font-size: 1rem; }
+        button { width: 100%; padding: 1rem; border-radius: 8px; border: none; background: var(--accent); color: white; font-weight: 600; cursor: pointer; font-size: 1rem; }
+        button:hover { opacity: 0.9; }
+        .result { background: var(--bg); padding: 1rem; border-radius: 8px; margin-top: 1rem; }
+        .result h3 { color: var(--green); margin-bottom: 0.5rem; }
+        .big-number { font-size: 2rem; color: white; }
+        .tip { background: linear-gradient(135deg, #1a1f35 0%, #161b22 100%); border: 1px solid var(--green); margin-top: 2rem; }
+        .wallet { font-family: monospace; background: var(--bg); padding: 0.75rem; border-radius: 6px; word-break: break-all; margin: 0.5rem 0; font-size: 0.85rem; }
+        .note { font-size: 0.85rem; color: #8b949e; margin-top: 0.5rem; }
+        table { width: 100%; margin-top: 1rem; border-collapse: collapse; }
+        td { padding: 0.5rem 0; border-bottom: 1px solid #30363d; }
+        td:last-child { text-align: right; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>💰 BigQuery Cost Estimator</h1>
+        <p class="subtitle">Know before you run</p>
+
+        <div class="card">
+            <label>Data Scanned (bytes processed)</label>
+            <input type="number" id="bytes" placeholder="e.g., 1000000000" value="10000000000">
+            
+            <label>Unit</label>
+            <select id="unit">
+                <option value="1">Bytes</option>
+                <option value="1024">KB</option>
+                <option value="1048576">MB</option>
+                <option value="1073741824" selected>GB</option>
+                <option value="1099511627776">TB</option>
+            </select>
+
+            <label>Region Pricing</label>
+            <select id="region">
+                <option value="5">US/EU ($5/TB)</option>
+                <option value="6">Asia Pacific ($6/TB)</option>
+                <option value="6.5">South America ($6.50/TB)</option>
+            </select>
+
+            <label>Queries per month</label>
+            <input type="number" id="queries" value="1" min="1">
+
+            <button onclick="calculate()">Calculate Cost</button>
+
+            <div class="result" id="result" style="display:none;">
+                <h3>Estimated Cost</h3>
+                <div class="big-number" id="cost">$0.00</div>
+                <table>
+                    <tr><td>Data per query</td><td id="data-per"></td></tr>
+                    <tr><td>Monthly data</td><td id="monthly-data"></td></tr>
+                    <tr><td>Free tier (1 TB/mo)</td><td id="free-tier"></td></tr>
+                    <tr><td>Billable data</td><td id="billable"></td></tr>
+                </table>
+                <p class="note">* BigQuery charges for data scanned, not returned. Use SELECT specific columns to reduce costs.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3 style="color:white; margin-bottom:1rem;">💡 Quick Tips to Reduce Costs</h3>
+            <ul style="padding-left: 1.2rem;">
+                <li>Use <code>SELECT columns</code> instead of <code>SELECT *</code></li>
+                <li>Partition tables by date</li>
+                <li>Use clustering on high-cardinality columns</li>
+                <li>Preview with <code>LIMIT</code> (still scans full data though!)</li>
+                <li>Cache results when possible</li>
+            </ul>
+        </div>
+
+        <div class="card tip">
+            <h3 style="color:var(--green);">💚 Found this useful?</h3>
+            <p>Free tools take time to build. A small tip helps keep them free:</p>
+            <div class="wallet">0x4946d2344C740F113FbdC0346DFC79f5F6930cD8</div>
+            <p class="note">ETH, USDC, USDT on any EVM chain (Ethereum, Polygon, Arbitrum, Base)</p>
+        </div>
+
+        <p style="text-align:center; margin-top:2rem; color:#8b949e;">
+            More tools: <a href="/" style="color:var(--accent);">DE Cheatsheet</a> | 
+            <a href="https://datastack.tools" style="color:var(--accent);">DataStack Tools</a>
+        </p>
+    </div>
+
+    <script>
+        function calculate() {
+            const bytes = parseFloat(document.getElementById('bytes').value) || 0;
+            const unit = parseFloat(document.getElementById('unit').value);
+            const pricePerTB = parseFloat(document.getElementById('region').value);
+            const queries = parseInt(document.getElementById('queries').value) || 1;
+            
+            const bytesPerQuery = bytes * unit;
+            const totalBytes = bytesPerQuery * queries;
+            const TB = 1099511627776;
+            const freeTierTB = 1;
+            
+            const totalTB = totalBytes / TB;
+            const billableTB = Math.max(0, totalTB - freeTierTB);
+            const cost = billableTB * pricePerTB;
+            
+            document.getElementById('result').style.display = 'block';
+            document.getElementById('cost').textContent = '$' + cost.toFixed(2);
+            document.getElementById('data-per').textContent = formatBytes(bytesPerQuery);
+            document.getElementById('monthly-data').textContent = formatBytes(totalBytes);
+            document.getElementById('free-tier').textContent = '1 TB';
+            document.getElementById('billable').textContent = billableTB.toFixed(3) + ' TB';
+        }
+        
+        function formatBytes(bytes) {
+            if (bytes >= 1099511627776) return (bytes / 1099511627776).toFixed(2) + ' TB';
+            if (bytes >= 1073741824) return (bytes / 1073741824).toFixed(2) + ' GB';
+            if (bytes >= 1048576) return (bytes / 1048576).toFixed(2) + ' MB';
+            if (bytes >= 1024) return (bytes / 1024).toFixed(2) + ' KB';
+            return bytes + ' B';
+        }
+        
+        // Calculate on load
+        calculate();
+    </script>
+</body>
+</html>
