@@ -3,104 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Free Data Engineering Tools | DE Toolkit</title>
-    <meta name="description" content="Free tools for data engineers: cost calculators, DAG generators, cron builders, cheatsheets. No signup required.">
+    <title>Free Developer Tools | DE Toolkit</title>
+    <meta name="description" content="Free developer tools: JSON formatter, hash generator, Base64, cost calculators, cron builder. No signup required.">
+    <meta name="keywords" content="developer tools, json formatter, hash generator, base64, snowflake calculator, bigquery cost, airflow dag, cron generator">
+    <link rel="canonical" href="https://technipun-ai.github.io/de-cheatsheet/">
     <style>
         :root { --bg: #0d1117; --card: #161b22; --text: #c9d1d9; --accent: #58a6ff; --green: #3fb950; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
-        .hero { padding: 4rem 2rem; text-align: center; background: linear-gradient(135deg, #161b22 0%, #0d1117 100%); border-bottom: 1px solid #30363d; }
-        h1 { color: white; font-size: 2.5rem; margin-bottom: 0.5rem; }
-        .subtitle { color: var(--accent); font-size: 1.2rem; margin-bottom: 1rem; }
-        .tagline { color: #8b949e; max-width: 500px; margin: 0 auto; }
-        .container { max-width: 900px; margin: 0 auto; padding: 2rem; }
-        .tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
-        .tool-card { background: var(--card); border-radius: 12px; padding: 1.5rem; border: 1px solid #30363d; transition: border-color 0.2s, transform 0.2s; }
+        .hero { padding: 3rem 1.5rem; text-align: center; background: linear-gradient(135deg, #161b22 0%, #0d1117 100%); border-bottom: 1px solid #30363d; }
+        h1 { color: white; font-size: 2rem; margin-bottom: 0.5rem; }
+        .subtitle { color: var(--accent); font-size: 1.1rem; margin-bottom: 0.5rem; }
+        .tagline { color: #8b949e; max-width: 500px; margin: 0 auto; font-size: 0.95rem; }
+        .container { max-width: 1000px; margin: 0 auto; padding: 1.5rem; }
+        .section-title { color: white; margin: 2rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid #30363d; font-size: 1.1rem; }
+        .tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; }
+        .tool-card { background: var(--card); border-radius: 10px; padding: 1.25rem; border: 1px solid #30363d; transition: border-color 0.2s, transform 0.2s; }
         .tool-card:hover { border-color: var(--accent); transform: translateY(-2px); }
-        .tool-card h3 { color: white; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
-        .tool-card p { color: #8b949e; font-size: 0.9rem; margin-bottom: 1rem; }
-        .tool-card a { display: inline-block; background: var(--accent); color: white; padding: 0.5rem 1rem; border-radius: 6px; text-decoration: none; font-weight: 500; font-size: 0.9rem; }
+        .tool-card h3 { color: white; margin-bottom: 0.4rem; font-size: 1rem; display: flex; align-items: center; gap: 0.4rem; }
+        .tool-card p { color: #8b949e; font-size: 0.85rem; margin-bottom: 0.75rem; }
+        .tool-card a { display: inline-block; background: var(--accent); color: white; padding: 0.4rem 0.8rem; border-radius: 5px; text-decoration: none; font-weight: 500; font-size: 0.85rem; }
         .tool-card a:hover { opacity: 0.9; }
         .featured { border-color: var(--green); background: linear-gradient(135deg, #1a2332 0%, #161b22 100%); }
-        .featured-badge { background: var(--green); color: #0d1117; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.7rem; font-weight: 600; }
-        .section-title { color: white; margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 1px solid #30363d; }
-        .tip-section { background: var(--card); border-radius: 12px; padding: 2rem; border: 1px solid var(--green); text-align: center; margin-top: 2rem; }
-        .tip-section h3 { color: var(--green); margin-bottom: 0.5rem; }
-        .wallet { font-family: monospace; background: var(--bg); padding: 1rem; border-radius: 8px; margin: 1rem 0; word-break: break-all; border: 1px solid #30363d; }
-        .networks { display: flex; justify-content: center; gap: 0.5rem; flex-wrap: wrap; margin-top: 1rem; }
-        .network { background: var(--bg); padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; border: 1px solid #30363d; }
-        footer { text-align: center; padding: 2rem; color: #8b949e; font-size: 0.9rem; border-top: 1px solid #30363d; margin-top: 2rem; }
+        .featured-badge { background: var(--green); color: #0d1117; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.65rem; font-weight: 600; }
+        .tip-section { background: var(--card); border-radius: 10px; padding: 1.5rem; border: 1px solid var(--green); text-align: center; margin-top: 2rem; }
+        .tip-section h3 { color: var(--green); margin-bottom: 0.4rem; }
+        .wallet { font-family: monospace; background: var(--bg); padding: 0.75rem; border-radius: 6px; margin: 0.75rem 0; word-break: break-all; border: 1px solid #30363d; font-size: 0.9rem; }
+        .networks { display: flex; justify-content: center; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.75rem; }
+        .network { background: var(--bg); padding: 0.2rem 0.6rem; border-radius: 15px; font-size: 0.75rem; border: 1px solid #30363d; }
+        footer { text-align: center; padding: 1.5rem; color: #8b949e; font-size: 0.85rem; border-top: 1px solid #30363d; margin-top: 2rem; }
         footer a { color: var(--accent); text-decoration: none; }
+        .new-badge { background: #f85149; color: white; padding: 0.1rem 0.3rem; border-radius: 3px; font-size: 0.6rem; font-weight: 600; margin-left: 0.3rem; }
     </style>
 </head>
 <body>
     <div class="hero">
         <h1>🛠️ DE Toolkit</h1>
-        <p class="subtitle">Free Tools for Data Engineers</p>
-        <p class="tagline">No signup. No email gate. Just useful tools built by data engineers who've been there.</p>
+        <p class="subtitle">Free Developer & Data Engineering Tools</p>
+        <p class="tagline">No signup. No tracking. No data leaves your browser. Just useful tools.</p>
     </div>
 
     <div class="container">
-        <h2 class="section-title">📊 Cost Calculators</h2>
+        <h2 class="section-title">🔧 Developer Utilities</h2>
         <div class="tools-grid">
             <div class="tool-card">
-                <h3>❄️ Snowflake Cost Calculator</h3>
-                <p>Estimate credit costs before scaling. Compare warehouse sizes. Know your burn rate.</p>
+                <h3>{ } JSON Formatter <span class="new-badge">NEW</span></h3>
+                <p>Format, validate, and minify JSON. Shows key count and size comparison.</p>
+                <a href="json-formatter.html">Open Tool →</a>
+            </div>
+            <div class="tool-card">
+                <h3>🔒 Hash Generator <span class="new-badge">NEW</span></h3>
+                <p>Generate MD5, SHA-1, SHA-256, SHA-512 hashes instantly.</p>
+                <a href="hash-generator.html">Open Tool →</a>
+            </div>
+            <div class="tool-card">
+                <h3>🔐 Base64 Encoder <span class="new-badge">NEW</span></h3>
+                <p>Encode/decode Base64 and URL-safe Base64 strings.</p>
+                <a href="base64-tool.html">Open Tool →</a>
+            </div>
+            <div class="tool-card">
+                <h3>⏰ Cron Builder</h3>
+                <p>Build cron expressions visually. See next 5 run times.</p>
+                <a href="cron-generator.html">Open Tool →</a>
+            </div>
+        </div>
+
+        <h2 class="section-title">💰 Cost Calculators</h2>
+        <div class="tools-grid">
+            <div class="tool-card">
+                <h3>❄️ Snowflake Calculator</h3>
+                <p>Estimate credit costs before scaling. Compare warehouse sizes.</p>
                 <a href="snowflake-cost-calc.html">Open Tool →</a>
             </div>
             <div class="tool-card">
-                <h3>💰 BigQuery Cost Estimator</h3>
-                <p>Calculate query costs by data scanned. Includes free tier calculation and quick optimization tips.</p>
+                <h3>💎 BigQuery Estimator</h3>
+                <p>Calculate query costs by data scanned. Includes free tier.</p>
                 <a href="bq-cost.html">Open Tool →</a>
             </div>
         </div>
 
-        <h2 class="section-title">⚙️ Generators</h2>
+        <h2 class="section-title">⚙️ Code Generators</h2>
         <div class="tools-grid">
             <div class="tool-card">
                 <h3>🔄 Airflow DAG Generator</h3>
-                <p>Generate production-ready DAG code. Configure schedules, retries, dependencies visually.</p>
+                <p>Generate production-ready DAG code. Configure schedules and dependencies.</p>
                 <a href="airflow-dag-generator.html">Open Tool →</a>
-            </div>
-            <div class="tool-card">
-                <h3>⏰ Cron Expression Builder</h3>
-                <p>Build cron expressions visually. See next run times. Copy ready-to-use expressions.</p>
-                <a href="cron-generator.html">Open Tool →</a>
             </div>
         </div>
 
         <h2 class="section-title">📄 Resources</h2>
         <div class="tools-grid">
             <div class="tool-card featured">
-                <h3>📊 Data Engineering Cheatsheet <span class="featured-badge">NEW</span></h3>
-                <p>Comprehensive 2026 guide: SQL optimization, Airflow patterns, Spark tuning, Kafka, dbt, interview prep. 9000+ words of battle-tested knowledge.</p>
+                <h3>📊 DE Cheatsheet 2026 <span class="featured-badge">FEATURED</span></h3>
+                <p>SQL, Airflow, Spark, Kafka, dbt, interview prep — 9000+ words of practical knowledge.</p>
                 <a href="https://gist.github.com/technipun-ai/0a4292cdeed554c42e6c16c7768b22d3" target="_blank">Get Cheatsheet →</a>
             </div>
             <div class="tool-card">
-                <h3>🗂️ DataStack Tools Directory</h3>
-                <p>Curated directory of 100+ data engineering tools. Compare ETL, orchestration, warehouses, and more.</p>
+                <h3>🗂️ DataStack Tools</h3>
+                <p>Directory of 100+ data engineering tools. Compare ETL, orchestration, warehouses.</p>
                 <a href="https://datastack.tools" target="_blank">Browse Tools →</a>
             </div>
         </div>
 
         <div class="tip-section">
             <h3>💚 These tools are free. Tips keep them that way.</h3>
-            <p>Built by engineers who've been in the trenches. If any tool saves you time, consider a tip:</p>
+            <p style="font-size: 0.9rem;">Every tool here runs entirely in your browser — no servers, no tracking, no data collection.</p>
+            <p style="font-size: 0.9rem;">If any tool saved you time, consider a tip:</p>
             <div class="wallet">0x4946d2344C740F113FbdC0346DFC79f5F6930cD8</div>
-            <p style="color: #8b949e; font-size: 0.9rem;">Accepts any amount — even $1 helps keep the servers running</p>
+            <p style="color: #8b949e; font-size: 0.85rem;">Accepts any amount — even $1 helps</p>
             <div class="networks">
                 <span class="network">Ethereum</span>
                 <span class="network">Polygon</span>
                 <span class="network">Arbitrum</span>
                 <span class="network">Base</span>
                 <span class="network">USDC</span>
-                <span class="network">USDT</span>
             </div>
         </div>
     </div>
 
     <footer>
-        <p>Made with ☕ by <a href="https://github.com/technipun-ai">technipun-ai</a> | <a href="https://datastack.tools">DataStack Tools</a></p>
+        <p>Made with ☕ by <a href="https://github.com/technipun-ai">technipun-ai</a></p>
+        <p style="margin-top: 0.5rem;"><a href="https://datastack.tools">DataStack Tools</a> • <a href="https://github.com/technipun-ai/de-cheatsheet">GitHub</a></p>
     </footer>
 </body>
 </html>

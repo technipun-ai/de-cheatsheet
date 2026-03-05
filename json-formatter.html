@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON Formatter & Validator | Free Tool</title>
+    <meta name="description" content="Format, validate, and minify JSON instantly. Free, no signup, works offline.">
+    <style>
+        :root { --bg: #0d1117; --card: #161b22; --text: #c9d1d9; --accent: #58a6ff; --green: #3fb950; --red: #f85149; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); padding: 1rem; line-height: 1.6; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 { color: white; margin-bottom: 0.5rem; font-size: 1.5rem; }
+        .subtitle { color: var(--accent); margin-bottom: 1rem; font-size: 0.9rem; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
+        .panel { background: var(--card); border-radius: 8px; padding: 1rem; border: 1px solid #30363d; }
+        .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+        .panel-header h3 { color: white; font-size: 0.9rem; }
+        textarea { width: 100%; height: 400px; background: var(--bg); border: 1px solid #30363d; border-radius: 6px; color: var(--text); padding: 0.75rem; font-family: monospace; font-size: 0.85rem; resize: vertical; }
+        .buttons { display: flex; gap: 0.5rem; flex-wrap: wrap; margin: 1rem 0; }
+        button { padding: 0.5rem 1rem; border-radius: 6px; border: none; background: var(--accent); color: white; font-weight: 500; cursor: pointer; font-size: 0.85rem; }
+        button:hover { opacity: 0.9; }
+        button.secondary { background: transparent; border: 1px solid #30363d; color: var(--text); }
+        button.success { background: var(--green); }
+        button.danger { background: var(--red); }
+        .status { padding: 0.5rem 1rem; border-radius: 6px; margin-bottom: 1rem; font-size: 0.85rem; }
+        .status.valid { background: rgba(63, 185, 80, 0.1); border: 1px solid var(--green); color: var(--green); }
+        .status.invalid { background: rgba(248, 81, 73, 0.1); border: 1px solid var(--red); color: var(--red); }
+        .status.info { background: rgba(88, 166, 255, 0.1); border: 1px solid var(--accent); color: var(--accent); }
+        .tip { background: linear-gradient(135deg, #1a1f35 0%, #161b22 100%); border: 1px solid var(--green); padding: 1rem; border-radius: 8px; margin-top: 1rem; text-align: center; }
+        .wallet { font-family: monospace; background: var(--bg); padding: 0.5rem; border-radius: 4px; font-size: 0.75rem; word-break: break-all; margin: 0.5rem 0; }
+        .stats { font-size: 0.8rem; color: #8b949e; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>{ } JSON Formatter & Validator</h1>
+        <p class="subtitle">Format, validate, minify — works offline, no data leaves your browser</p>
+
+        <div id="status" class="status info">Paste JSON to get started</div>
+
+        <div class="buttons">
+            <button onclick="formatJSON()">✨ Format</button>
+            <button onclick="minifyJSON()">📦 Minify</button>
+            <button onclick="validateJSON()" class="secondary">✓ Validate</button>
+            <button onclick="copyOutput()" class="secondary">📋 Copy</button>
+            <button onclick="clearAll()" class="secondary">🗑 Clear</button>
+            <button onclick="loadSample()" class="secondary">📝 Sample</button>
+        </div>
+
+        <div class="grid">
+            <div class="panel">
+                <div class="panel-header">
+                    <h3>Input</h3>
+                    <span class="stats" id="inputStats">0 chars</span>
+                </div>
+                <textarea id="input" placeholder='{"key": "value"}' oninput="updateStats()"></textarea>
+            </div>
+            <div class="panel">
+                <div class="panel-header">
+                    <h3>Output</h3>
+                    <span class="stats" id="outputStats">0 chars</span>
+                </div>
+                <textarea id="output" readonly placeholder="Formatted JSON will appear here"></textarea>
+            </div>
+        </div>
+
+        <div class="tip">
+            <strong style="color: var(--green);">💚 Free tools = time invested</strong>
+            <p style="font-size: 0.85rem; margin: 0.5rem 0;">If this saved you time, tips keep it free:</p>
+            <div class="wallet">0x4946d2344C740F113FbdC0346DFC79f5F6930cD8</div>
+            <p style="font-size: 0.75rem; color: #8b949e;">ETH/USDC on any EVM chain</p>
+        </div>
+    </div>
+
+    <script>
+const input = document.getElementById('input');
+const output = document.getElementById('output');
+const status = document.getElementById('status');
+
+function updateStats() {
+    document.getElementById('inputStats').textContent = input.value.length + ' chars';
+    document.getElementById('outputStats').textContent = output.value.length + ' chars';
+}
+
+function setStatus(msg, type) {
+    status.textContent = msg;
+    status.className = 'status ' + type;
+}
+
+function formatJSON() {
+    try {
+        const parsed = JSON.parse(input.value);
+        output.value = JSON.stringify(parsed, null, 2);
+        const keys = countKeys(parsed);
+        setStatus(`✓ Valid JSON — ${keys} keys, formatted with 2-space indent`, 'valid');
+        updateStats();
+    } catch (e) {
+        setStatus('✗ Invalid JSON: ' + e.message, 'invalid');
+        output.value = '';
+    }
+}
+
+function minifyJSON() {
+    try {
+        const parsed = JSON.parse(input.value);
+        output.value = JSON.stringify(parsed);
+        const saved = input.value.length - output.value.length;
+        setStatus(`✓ Minified — saved ${saved} chars (${Math.round(saved/input.value.length*100)}% smaller)`, 'valid');
+        updateStats();
+    } catch (e) {
+        setStatus('✗ Invalid JSON: ' + e.message, 'invalid');
+    }
+}
+
+function validateJSON() {
+    try {
+        const parsed = JSON.parse(input.value);
+        const keys = countKeys(parsed);
+        const type = Array.isArray(parsed) ? 'array' : 'object';
+        setStatus(`✓ Valid JSON — ${type} with ${keys} total keys/elements`, 'valid');
+    } catch (e) {
+        setStatus('✗ Invalid JSON: ' + e.message, 'invalid');
+    }
+}
+
+function countKeys(obj) {
+    if (typeof obj !== 'object' || obj === null) return 0;
+    let count = Array.isArray(obj) ? obj.length : Object.keys(obj).length;
+    for (const key in obj) {
+        if (typeof obj[key] === 'object') {
+            count += countKeys(obj[key]);
+        }
+    }
+    return count;
+}
+
+function copyOutput() {
+    if (!output.value) {
+        setStatus('Nothing to copy', 'info');
+        return;
+    }
+    navigator.clipboard.writeText(output.value).then(() => {
+        setStatus('✓ Copied to clipboard!', 'valid');
+    });
+}
+
+function clearAll() {
+    input.value = '';
+    output.value = '';
+    setStatus('Cleared — paste JSON to get started', 'info');
+    updateStats();
+}
+
+function loadSample() {
+    input.value = JSON.stringify({
+        "name": "Data Engineering Toolkit",
+        "version": "1.0.0",
+        "tools": [
+            {"name": "JSON Formatter", "type": "utility"},
+            {"name": "Cron Generator", "type": "generator"},
+            {"name": "Cost Calculator", "type": "calculator"}
+        ],
+        "metadata": {
+            "created": "2026-03-05",
+            "author": "DE Toolkit",
+            "license": "MIT"
+        }
+    }, null, 2);
+    setStatus('Sample loaded — click Format or Minify', 'info');
+    updateStats();
+}
+
+updateStats();
+    </script>
+</body>
+</html>

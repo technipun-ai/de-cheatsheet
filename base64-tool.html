@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Base64 Encode/Decode | Free Tool</title>
+    <meta name="description" content="Encode and decode Base64 strings instantly. Free, works offline.">
+    <style>
+        :root { --bg: #0d1117; --card: #161b22; --text: #c9d1d9; --accent: #58a6ff; --green: #3fb950; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); padding: 1.5rem; line-height: 1.6; }
+        .container { max-width: 800px; margin: 0 auto; }
+        h1 { color: white; margin-bottom: 0.5rem; }
+        .subtitle { color: var(--accent); margin-bottom: 1.5rem; }
+        .card { background: var(--card); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; border: 1px solid #30363d; }
+        h3 { color: white; margin-bottom: 1rem; }
+        textarea { width: 100%; height: 120px; background: var(--bg); border: 1px solid #30363d; border-radius: 8px; color: var(--text); padding: 0.75rem; font-family: monospace; font-size: 0.9rem; margin-bottom: 1rem; resize: vertical; }
+        .buttons { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+        button { padding: 0.6rem 1.2rem; border-radius: 6px; border: none; background: var(--accent); color: white; font-weight: 600; cursor: pointer; }
+        button:hover { opacity: 0.9; }
+        button.secondary { background: transparent; border: 1px solid #30363d; color: var(--text); }
+        .result { margin-top: 1rem; padding: 1rem; background: var(--bg); border-radius: 8px; font-family: monospace; word-break: break-all; }
+        .tip { background: linear-gradient(135deg, #1a1f35 0%, #161b22 100%); border: 1px solid var(--green); text-align: center; }
+        .wallet { font-family: monospace; background: var(--bg); padding: 0.5rem; border-radius: 4px; font-size: 0.85rem; word-break: break-all; margin: 0.5rem 0; }
+        .note { font-size: 0.85rem; color: #8b949e; }
+        .tabs { display: flex; gap: 0; margin-bottom: 1rem; }
+        .tab { padding: 0.5rem 1rem; background: var(--bg); border: 1px solid #30363d; cursor: pointer; }
+        .tab:first-child { border-radius: 6px 0 0 6px; }
+        .tab:last-child { border-radius: 0 6px 6px 0; }
+        .tab.active { background: var(--accent); border-color: var(--accent); color: white; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Base64 Encode/Decode</h1>
+        <p class="subtitle">Convert text to Base64 and back — works offline</p>
+
+        <div class="card">
+            <h3>Encode Text → Base64</h3>
+            <textarea id="encodeInput" placeholder="Enter text to encode..."></textarea>
+            <div class="buttons">
+                <button onclick="encodeBase64()">Encode to Base64</button>
+                <button class="secondary" onclick="copyResult('encodeResult')">📋 Copy</button>
+                <button class="secondary" onclick="clearField('encodeInput', 'encodeResult')">Clear</button>
+            </div>
+            <div class="result" id="encodeResult">Result will appear here...</div>
+        </div>
+
+        <div class="card">
+            <h3>Decode Base64 → Text</h3>
+            <textarea id="decodeInput" placeholder="Enter Base64 string to decode..."></textarea>
+            <div class="buttons">
+                <button onclick="decodeBase64()">Decode from Base64</button>
+                <button class="secondary" onclick="copyResult('decodeResult')">📋 Copy</button>
+                <button class="secondary" onclick="clearField('decodeInput', 'decodeResult')">Clear</button>
+            </div>
+            <div class="result" id="decodeResult">Result will appear here...</div>
+        </div>
+
+        <div class="card">
+            <h3>URL-Safe Base64</h3>
+            <p class="note" style="margin-bottom: 1rem;">Standard Base64 uses + and / which can cause issues in URLs. URL-safe variant uses - and _ instead.</p>
+            <textarea id="urlInput" placeholder="Enter text for URL-safe Base64..."></textarea>
+            <div class="buttons">
+                <button onclick="encodeUrlSafe()">Encode URL-Safe</button>
+                <button onclick="decodeUrlSafe()">Decode URL-Safe</button>
+                <button class="secondary" onclick="copyResult('urlResult')">📋 Copy</button>
+            </div>
+            <div class="result" id="urlResult">Result will appear here...</div>
+        </div>
+
+        <div class="card tip">
+            <h3 style="color: var(--green);">💚 Saved you time?</h3>
+            <p>Free tools = real effort. Tips keep them free:</p>
+            <div class="wallet">0x4946d2344C740F113FbdC0346DFC79f5F6930cD8</div>
+            <p class="note">ETH/USDC on Ethereum, Polygon, Arbitrum, Base</p>
+        </div>
+    </div>
+
+    <script>
+function encodeBase64() {
+    const input = document.getElementById('encodeInput').value;
+    try {
+        const encoded = btoa(unescape(encodeURIComponent(input)));
+        document.getElementById('encodeResult').textContent = encoded;
+    } catch (e) {
+        document.getElementById('encodeResult').textContent = 'Error: ' + e.message;
+    }
+}
+
+function decodeBase64() {
+    const input = document.getElementById('decodeInput').value.trim();
+    try {
+        const decoded = decodeURIComponent(escape(atob(input)));
+        document.getElementById('decodeResult').textContent = decoded;
+    } catch (e) {
+        document.getElementById('decodeResult').textContent = 'Error: Invalid Base64 string';
+    }
+}
+
+function encodeUrlSafe() {
+    const input = document.getElementById('urlInput').value;
+    try {
+        const encoded = btoa(unescape(encodeURIComponent(input)))
+            .replace(/\+/g, '-')
+            .replace(/\//g, '_')
+            .replace(/=+$/, '');
+        document.getElementById('urlResult').textContent = encoded;
+    } catch (e) {
+        document.getElementById('urlResult').textContent = 'Error: ' + e.message;
+    }
+}
+
+function decodeUrlSafe() {
+    let input = document.getElementById('urlInput').value.trim();
+    try {
+        input = input.replace(/-/g, '+').replace(/_/g, '/');
+        while (input.length % 4) input += '=';
+        const decoded = decodeURIComponent(escape(atob(input)));
+        document.getElementById('urlResult').textContent = decoded;
+    } catch (e) {
+        document.getElementById('urlResult').textContent = 'Error: Invalid Base64 string';
+    }
+}
+
+function copyResult(id) {
+    const text = document.getElementById(id).textContent;
+    navigator.clipboard.writeText(text).then(() => {
+        alert('Copied!');
+    });
+}
+
+function clearField(inputId, resultId) {
+    document.getElementById(inputId).value = '';
+    document.getElementById(resultId).textContent = 'Result will appear here...';
+}
+    </script>
+</body>
+</html>
