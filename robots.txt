@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://technipun-ai.github.io/de-cheatsheet/sitemap.xml
